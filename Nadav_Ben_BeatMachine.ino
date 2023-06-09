@@ -6,6 +6,11 @@ float cChord[] = {130.81, 164.81, 196.00};
 
 float* allChords[] = {gChord, dChord, eChord, cChord}; 
 
+float minSensorReading = 1023;
+float maxSensorReading;
+
+float minLightReading = 1023;
+float maxLightReading;
 
 
 void setup() {
@@ -16,9 +21,9 @@ void setup() {
 // courtesy of shlomo
 void playTone(float frequency, int knobValue)
 {
-    int octave = map(knobValue, 70, 400, 0, 9);
+    int octave = map(knobValue, minLightReading, maxLightReading, 0, 9);
     frequency = frequency * pow(2, octave);
-    tone(4, frequency, 200);
+    tone(13, frequency, 200);
 }
 
 void loop() {
@@ -26,15 +31,25 @@ void loop() {
   // chord input
   int sensorReading = analogRead(A0);
   // speed input
-  int potentiometer = analogRead(A5);
+  int potentiometer = analogRead(A2);
   // octave input
-  int lightReading = analogRead(A3);
+  int lightReading = analogRead(A1);
+
+  // adding dynamic calibration for sensors
+  minSensorReading = min(sensorReading, minSensorReading);
+  maxSensorReading = max(sensorReading, maxSensorReading);
+
+  minLightReading = min(sensorReading, minSensorReading);
+  maxLightReading = max(sensorReading, maxSensorReading);
+
+  
+  
+
+  int playing = map(sensorReading, minSensorReading, maxSensorReading, 0, 3);
+  int speed = map(potentiometer, 0, 1023, 1, 10);
 
 
-  int playing = map(sensorReading, 30, 650, 0, 3);
-  int speed = map(potentiometer, 0, 1023, 2, 7);
-
-  Serial.println(sensorReading);
+  Serial.println(potentiometer);
   
   
   for (int i=0; i < 3; i++) {
